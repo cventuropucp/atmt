@@ -157,11 +157,18 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .chip{font:500 .82rem var(--font-body);background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:6px 11px;cursor:pointer;text-align:left}
 .chip:hover{border-color:var(--accent);color:var(--accent)}
 .chip.strong{background:var(--steel);color:var(--steel-ink);border-color:var(--steel)}
-.lead-card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:10px;align-self:stretch}
-.lead-card label{font-size:.82rem}
-.lead-card input,.lead-card textarea{padding:8px 10px;font-size:.9rem}
-.lead-card textarea{min-height:70px}
-.lead-card .form-actions .btn{flex:1}
+.chat-fab .emoji{font-size:1.6rem;line-height:1}
+.bot-avatar{width:38px;height:38px;border-radius:50%;background:var(--accent);display:grid;place-items:center;font-size:1.35rem;flex:0 0 auto}
+.msg.bot strong{font-weight:700}
+.msg.error{border-color:var(--accent)}
+.msg.error a{font-weight:600}
+.typing{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;gap:5px}
+.typing span{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:blink 1.2s infinite ease-in-out}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.chat-foot{font-size:.74rem;color:var(--muted);text-align:center;padding:0 10px 8px;background:var(--surface)}
+.chat-foot a{color:var(--wa);font-weight:600}
 .chat-input{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line);background:var(--surface)}
 .chat-input input{flex:1;min-width:0}
 .chat-input button{flex:0 0 auto}
@@ -344,21 +351,22 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 
 <!-- Chatbot -->
 <button class="chat-fab" id="chatFab" type="button" aria-expanded="false" aria-controls="chat">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>
+  <span class="emoji" aria-hidden="true">🤖</span>
   <span id="fabLabel">¿Te ayudo?</span>
 </button>
 
 <div class="chat" id="chat" role="dialog" aria-label="Asistente ATMT" hidden>
   <div class="chat-head">
-    <span class="logo-mark">ATMT</span>
-    <div><strong>Asistente ATMT</strong><small>Respuestas al instante</small></div>
+    <span class="bot-avatar" aria-hidden="true">🤖</span>
+    <div><strong>Asistente ATMT</strong><small>Precios, stock y pedidos</small></div>
     <button class="chat-close" id="chatClose" type="button" aria-label="Cerrar chat">×</button>
   </div>
   <div class="chat-body" id="chatBody" aria-live="polite"></div>
   <form class="chat-input" id="chatForm">
     <input id="chatText" autocomplete="off" placeholder="Escribe tu pregunta…" aria-label="Escribe tu pregunta">
-    <button class="btn btn-accent btn-sm" type="submit">Enviar</button>
+    <button class="btn btn-accent btn-sm" type="submit" id="chatSend">Enviar</button>
   </form>
+  <p class="chat-foot">¿Prefieres hablar con una persona? <a id="chatWa" href="#" target="_blank" rel="noopener">Escríbenos por WhatsApp</a></p>
 </div>
 
 <script>
@@ -368,6 +376,7 @@ const CONFIG = {
   whatsapp: "51977446048",                 // código de país 51 + número, sin espacios ni "+"
   whatsappVisible: "+51 977 446 048",
   email: "cventuro@pucp.pe",
+  n8nChatUrl: "https://grupopachas.app.n8n.cloud/webhook/1158d926-e8a7-4d0b-839e-24eff28657f1/chat",
   direccion: "Av. Principal 123, Lima (edita esta dirección)",
   horario: [
     ["Lunes a viernes", "8:00 a. m. – 7:00 p. m."],
@@ -375,40 +384,6 @@ const CONFIG = {
     ["Domingo y feriados", "9:00 a. m. – 1:00 p. m."]
   ]
 };
-
-/* ============ 10 PREGUNTAS BÁSICAS ============ */
-const FAQ = [
-  { q: "¿Cuál es su horario de atención?",
-    k: ["horario","hora","abren","cierran","atienden","abierto","domingo","sabado","feriado"],
-    a: () => "Nuestro horario es:\n" + CONFIG.horario.map(h => "• " + h[0] + ": " + h[1]).join("\n") },
-  { q: "¿Dónde están ubicados?",
-    k: ["donde","ubicacion","ubicados","direccion","local","tienda","llegar","mapa"],
-    a: () => "Estamos en " + CONFIG.direccion + ". Si vienes por un pedido grande, avísanos antes por WhatsApp y te lo tenemos listo." },
-  { q: "¿Hacen delivery?",
-    k: ["delivery","envio","envian","despacho","llevan","domicilio","obra","reparto"],
-    a: () => "Sí, hacemos delivery a casa u obra. El costo depende del distrito y del volumen del pedido. Escríbenos tu dirección y lista de productos y te cotizamos el envío." },
-  { q: "¿Qué medios de pago aceptan?",
-    k: ["pago","pagar","tarjeta","yape","plin","efectivo","transferencia","visa","credito","debito"],
-    a: () => "Aceptamos efectivo, tarjetas de débito y crédito, Yape, Plin y transferencia bancaria. Para delivery, el pago se coordina al confirmar el pedido." },
-  { q: "¿Venden por mayor o tienen descuentos?",
-    k: ["mayor","mayorista","descuento","volumen","cantidad","contratista","maestro","empresa","oferta"],
-    a: () => "Sí. Tenemos precios especiales por volumen para maestros de obra, contratistas y empresas. Envíanos tu lista y te damos el mejor precio." },
-  { q: "¿Emiten boleta y factura?",
-    k: ["factura","boleta","ruc","comprobante","sunat","electronica"],
-    a: () => "Sí, emitimos boleta y factura electrónica. Para factura solo necesitamos tu RUC y razón social." },
-  { q: "¿Los productos tienen garantía?",
-    k: ["garantia","falla","defecto","malogro","devolucion","cambio","reclamo"],
-    a: () => "Las herramientas eléctricas tienen la garantía del fabricante. Para cambios o devoluciones, guarda tu comprobante y trae el producto con su empaque dentro de los 7 días de la compra." },
-  { q: "¿Qué productos venden?",
-    k: ["productos","venden","tienen","catalogo","herramienta","cemento","pintura","tubo","cable","fierro","tornillo","taladro","stock","hay"],
-    a: () => "Vendemos herramientas manuales y eléctricas, gasfitería, electricidad, pinturas y acabados, materiales de construcción, fijaciones y equipos de seguridad. Si buscas algo específico, dime qué es y te confirmamos stock." },
-  { q: "¿Cómo pido una cotización?",
-    k: ["cotizacion","cotizar","presupuesto","precio","cuanto","cuesta","vale","lista"],
-    a: () => "Envíanos tu lista de materiales con cantidades y medidas (por ejemplo: 10 bolsas de cemento, 5 varillas de fierro de ⅜\"). Te respondemos con precios y disponibilidad. Puedes dejar tus datos aquí mismo con el botón «Hablar con un asesor»." },
-  { q: "¿Me ayudan a elegir el material?",
-    k: ["asesoria","ayuda","recomienda","elegir","cual","medida","calcular","cuantos","necesito","consejo"],
-    a: () => "Claro. Cuéntanos qué vas a hacer (por ejemplo, pintar una sala de 4 × 5 m o instalar un tomacorriente) y te recomendamos el material, la medida y la cantidad." }
-];
 
 /* ============ Utilidades ============ */
 const $ = s => document.querySelector(s);
@@ -481,119 +456,99 @@ cf.addEventListener("submit", async e => {
   }
 });
 
-/* ============ Chatbot ============ */
+/* ============ Chatbot (agente n8n) ============ */
 const chat = $("#chat"), body = $("#chatBody"), fab = $("#chatFab");
-let started = false;
-const transcript = [];
+const chatInput = $("#chatText"), chatSend = $("#chatSend");
+$("#chatWa").href = waLink("Hola ATMT, necesito ayuda con: ");
+let started = false, busy = false;
 
-function addMsg(text, who) {
-  const m = document.createElement("div");
-  m.className = "msg " + who; m.textContent = text;
-  body.appendChild(m); body.scrollTop = body.scrollHeight;
-  transcript.push((who === "user" ? "Cliente: " : "Bot: ") + text);
+function newId() {
+  try { return crypto.randomUUID(); } catch { return "s-" + Date.now() + "-" + Math.random().toString(36).slice(2); }
 }
+let sessionId;
+try { sessionId = sessionStorage.getItem("atmtChatSession"); } catch {}
+if (!sessionId) { sessionId = newId(); try { sessionStorage.setItem("atmtChatSession", sessionId); } catch {} }
+
+const esc = s => s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function renderMd(text) {
+  return esc(text)
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/^\s*[-*•]\s+/gm, "• ")
+    .replace(/^#{1,6}\s*/gm, "");
+}
+function addMsg(text, who, cls) {
+  const m = document.createElement("div");
+  m.className = "msg " + who + (cls ? " " + cls : "");
+  if (who === "bot") m.innerHTML = renderMd(text); else m.textContent = text;
+  body.appendChild(m); body.scrollTop = body.scrollHeight;
+  return m;
+}
+function showTyping() {
+  const t = document.createElement("div"); t.className = "typing"; t.setAttribute("aria-label", "Escribiendo");
+  t.innerHTML = "<span></span><span></span><span></span>";
+  body.appendChild(t); body.scrollTop = body.scrollHeight;
+  return t;
+}
+const SUGERENCIAS = [
+  "¿Qué taladros tienen?",
+  "Precio del cemento Sol",
+  "Quiero comprar tubos PVC de ½\"",
+  "¿Tienen pintura látex blanca?"
+];
 function addChips() {
   const wrap = document.createElement("div"); wrap.className = "chips";
-  FAQ.forEach((f, i) => {
-    const c = document.createElement("button"); c.type = "button"; c.className = "chip"; c.textContent = f.q;
-    c.addEventListener("click", () => ask(i)); wrap.appendChild(c);
-  });
-  const adv = document.createElement("button"); adv.type = "button"; adv.className = "chip strong";
-  adv.textContent = "Hablar con un asesor"; adv.addEventListener("click", showLeadForm);
-  wrap.appendChild(adv);
-  body.appendChild(wrap); body.scrollTop = body.scrollHeight;
-}
-function ask(i) {
-  addMsg(FAQ[i].q, "user");
-  setTimeout(() => { addMsg(FAQ[i].a(), "bot"); followUp(); }, 280);
-}
-function followUp() {
-  const wrap = document.createElement("div"); wrap.className = "chips";
-  [["Otra pregunta", () => { addMsg("Elige una opción o escríbeme tu duda:", "bot"); addChips(); }],
-   ["Hablar con un asesor", showLeadForm]].forEach(([t, fn], idx) => {
-    const c = document.createElement("button"); c.type = "button"; c.className = "chip" + (idx ? " strong" : ""); c.textContent = t;
-    c.addEventListener("click", () => { wrap.remove(); fn(); }); wrap.appendChild(c);
+  SUGERENCIAS.forEach(q => {
+    const c = document.createElement("button"); c.type = "button"; c.className = "chip"; c.textContent = q;
+    c.addEventListener("click", () => { wrap.remove(); send(q); });
+    wrap.appendChild(c);
   });
   body.appendChild(wrap); body.scrollTop = body.scrollHeight;
 }
-function match(text) {
-  const words = norm(text).split(/\s+/).filter(Boolean);
-  let best = -1, score = 0;
-  FAQ.forEach((f, i) => {
-    let s = 0;
-    f.k.forEach(k => { if (words.some(w => w === k || (w.length > 3 && (w.startsWith(k) || k.startsWith(w))))) s++; });
-    if (s > score) { score = s; best = i; }
-  });
-  return score > 0 ? best : -1;
+
+async function send(text) {
+  if (busy || !text) return;
+  busy = true; chatSend.disabled = true;
+  addMsg(text, "user");
+  const typing = showTyping();
+  try {
+    const res = await fetch(CONFIG.n8nChatUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "sendMessage", sessionId, chatInput: text })
+    });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+    const out = Array.isArray(data) ? (data[0] && (data[0].output || data[0].text)) : (data.output || data.text);
+    typing.remove();
+    addMsg(out || "No recibí respuesta. ¿Puedes repetir tu pregunta?", "bot");
+  } catch (err) {
+    typing.remove();
+    const m = addMsg("", "bot", "error");
+    m.innerHTML = 'No pude conectarme con el asistente en este momento. Inténtalo de nuevo en unos segundos o <a href="' +
+      waLink("Hola ATMT, quiero consultar: " + text) + '" target="_blank" rel="noopener">escríbenos por WhatsApp</a>.';
+  } finally {
+    busy = false; chatSend.disabled = false; chatInput.focus();
+  }
 }
-let leadSeq = 0;
-function showLeadForm() {
-  addMsg("Déjame tus datos y un asesor te contacta. Tu consulta llega a nuestro WhatsApp y correo.", "bot");
-  const n = ++leadSeq;
-  const card = document.createElement("form"); card.className = "lead-card"; card.noValidate = true;
-  card.innerHTML =
-    '<label for="ldName' + n + '">Nombre<input id="ldName' + n + '" autocomplete="name" required></label>' +
-    '<label for="ldPhone' + n + '">Teléfono<input id="ldPhone' + n + '" type="tel" autocomplete="tel" required></label>' +
-    '<label for="ldMsg' + n + '">Consulta<textarea id="ldMsg' + n + '" required placeholder="¿Qué producto o servicio necesitas?"></textarea></label>' +
-    '<div class="form-actions"><button class="btn btn-wa btn-sm" type="button" data-k="wa">WhatsApp</button><button class="btn btn-accent btn-sm" type="submit">Correo</button></div>' +
-    '<p class="status" role="status"></p>';
-  body.appendChild(card); body.scrollTop = body.scrollHeight;
-  const st = card.querySelector(".status");
-  const read = () => {
-    const d = { nombre: card.querySelector("#ldName" + n).value.trim(), telefono: card.querySelector("#ldPhone" + n).value.trim(), consulta: card.querySelector("#ldMsg" + n).value.trim() };
-    if (!d.nombre || !d.telefono || !d.consulta) { st.className = "status"; st.textContent = "Completa los tres campos."; return null; }
-    const hist = transcript.filter(t => t.startsWith("Cliente:")).slice(-5).join(" | ");
-    if (hist) d.consulta += "\n(Preguntas en el chat: " + hist + ")";
-    return d;
-  };
-  card.querySelector('[data-k="wa"]').addEventListener("click", () => {
-    const d = read(); if (!d) return;
-    const href = waLink(buildMessage(d, "Chatbot"));
-    const a = document.createElement("a"); a.href = href; a.target = "_blank"; a.rel = "noopener";
-    document.body.appendChild(a); a.click(); a.remove();
-    st.className = "status"; st.innerHTML = 'Abrimos WhatsApp con tu mensaje. Solo presiona enviar. Si no se abrió, <a href="' + href + '" target="_blank" rel="noopener">toca aquí</a>.';
-  });
-  card.addEventListener("submit", async e => {
-    e.preventDefault();
-    const d = read(); if (!d) return;
-    st.className = "status"; st.textContent = "Enviando…";
-    try {
-      await sendEmail(d, "Chatbot");
-      st.className = "status ok"; st.textContent = "¡Enviado! Te contactaremos pronto.";
-      addMsg("Gracias, " + d.nombre.split(" ")[0] + ". Recibimos tu consulta y te escribiremos al " + d.telefono + ".", "bot");
-    } catch {
-      st.className = "status";
-      st.innerHTML = 'No se pudo enviar desde aquí. Escríbenos a <a href="' + mailLink("Consulta web – " + CONFIG.empresa, buildMessage(d, "Chatbot")) + '">' + CONFIG.email + '</a> o usa WhatsApp.';
-    }
-  });
-}
+
 function openChat() {
   chat.hidden = false; fab.setAttribute("aria-expanded", "true"); $("#fabLabel").textContent = "Cerrar";
   if (!started) {
     started = true;
-    addMsg("¡Hola! Soy el asistente de " + CONFIG.empresa + ". ¿En qué te ayudo? Elige una pregunta o escríbela:", "bot");
+    addMsg("¡Hola! 🤖 Soy el asistente de ATMT Ferretería. Pregúntame por cualquier artículo: te doy precio, disponibilidad y puedo registrar tu pedido.", "bot");
     addChips();
   }
-  setTimeout(() => $("#chatText").focus(), 50);
+  setTimeout(() => chatInput.focus(), 50);
 }
 function closeChat() { chat.hidden = true; fab.setAttribute("aria-expanded", "false"); $("#fabLabel").textContent = "¿Te ayudo?"; }
 fab.addEventListener("click", () => chat.hidden ? openChat() : closeChat());
 $("#chatClose").addEventListener("click", closeChat);
 document.querySelectorAll("[data-open-chat]").forEach(b => b.addEventListener("click", openChat));
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !chat.hidden) closeChat(); });
-
 $("#chatForm").addEventListener("submit", e => {
   e.preventDefault();
-  const input = $("#chatText"), text = input.value.trim(); if (!text) return;
-  input.value = ""; addMsg(text, "user");
-  const i = match(text);
-  setTimeout(() => {
-    if (/^(hola|buenas|buenos|hey|saludos)\b/i.test(norm(text).trim()) && i < 0) {
-      addMsg("¡Hola! Cuéntame qué necesitas o elige una de estas preguntas:", "bot"); addChips(); return;
-    }
-    if (i >= 0) { addMsg(FAQ[i].a(), "bot"); followUp(); }
-    else { addMsg("No tengo esa respuesta, pero un asesor sí. Déjame tus datos y te escribimos.", "bot"); showLeadForm(); }
-  }, 280);
+  const text = chatInput.value.trim(); if (!text) return;
+  chatInput.value = ""; send(text);
 });
 </script>
 
