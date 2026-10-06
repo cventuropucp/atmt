@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ATMT Ferretería</title>
+<meta name="description" content="ATMT: herramientas, gasfitería, electricidad, pinturas y materiales de construcción. Cotiza por WhatsApp.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: mostrador de ferretería — cabecera fija, hero con regla de medir, rejilla de categorías con medidas reales, chat flotante */
+:root{
+  --bg:#EEF0EE;          /* concreto claro */
+  --surface:#FFFFFF;
+  --surface-2:#E3E7E6;
+  --ink:#15191C;
+  --muted:#56616A;
+  --line:#CDD3D3;
+  --accent:#D9480F;      /* naranja seguridad */
+  --accent-ink:#FFFFFF;
+  --steel:#2F3B44;       /* acero galvanizado */
+  --steel-ink:#F2F4F5;
+  --ok:#1F7A4D;
+  --wa:#1C8C4E;
+  --font-display:"Big Shoulders Display","Arial Narrow","Roboto Condensed",Impact,sans-serif;
+  --font-body:"Archivo",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --r:6px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111417;--surface:#191E22;--surface-2:#222A2F;--ink:#ECEFF0;--muted:#9AA6AE;--line:#2E373D;
+    --accent:#FF7433;--accent-ink:#1A0E07;--steel:#2A363F;--steel-ink:#ECEFF0;--ok:#4CC28A;--wa:#2FB36A;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111417;--surface:#191E22;--surface-2:#222A2F;--ink:#ECEFF0;--muted:#9AA6AE;--line:#2E373D;
+  --accent:#FF7433;--accent-ink:#1A0E07;--steel:#2A363F;--steel-ink:#ECEFF0;--ok:#4CC28A;--wa:#2FB36A;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.55}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1140px;margin:0 auto;padding-inline:20px}
+h1,h2,h3{font-family:var(--font-display);text-wrap:balance;line-height:.95;margin:0;letter-spacing:.01em}
+.eyebrow{font-family:var(--font-mono);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+
+/* Cabecera */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--steel);color:var(--steel-ink)}
+.top .wrap{display:flex;align-items:center;gap:20px;min-height:64px;flex-wrap:wrap;padding-block:8px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-mark{font-family:var(--font-display);font-weight:900;font-size:1.9rem;letter-spacing:.04em;background:var(--accent);color:var(--accent-ink);padding:2px 10px 0;border-radius:3px;line-height:1.1}
+.logo small{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;opacity:.8}
+.nav{display:flex;gap:18px;margin-left:auto;flex-wrap:wrap}
+.nav a{text-decoration:none;font-weight:500;font-size:.95rem;opacity:.85}
+.nav a:hover{opacity:1;text-decoration:underline;text-underline-offset:4px}
+@media (max-width:720px){.nav{display:none}}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:600 .98rem var(--font-body);padding:12px 20px;border-radius:var(--r);border:2px solid transparent;cursor:pointer;text-decoration:none;transition:transform .12s ease,background .12s ease}
+.btn:hover{transform:translateY(-1px)}
+.btn-accent{background:var(--accent);color:var(--accent-ink)}
+.btn-wa{background:var(--wa);color:#fff}
+.btn-ghost{background:transparent;border-color:currentColor}
+.btn-sm{padding:8px 14px;font-size:.88rem}
+.top .btn{margin-left:4px}
+@media (max-width:720px){.top .btn{margin-left:auto}}
+
+/* Hero */
+.hero{padding-block:64px 0}
+.hero-grid{display:grid;grid-template-columns:1.25fr .9fr;gap:48px;align-items:end}
+@media (max-width:860px){.hero-grid{grid-template-columns:1fr;gap:32px}}
+.hero h1{font-size:clamp(3rem,8.5vw,6.4rem);font-weight:900;text-transform:uppercase;margin-top:14px}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p.lead{font-size:1.15rem;max-width:52ch;color:var(--muted);margin:22px 0 28px}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap}
+.spec{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px;min-width:0}
+.spec h3{font-size:1.5rem;text-transform:uppercase;margin-bottom:12px}
+.spec ul{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.spec li{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px dashed var(--line);font-size:.95rem}
+.spec li span:last-child{font-family:var(--font-mono);font-size:.85rem;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.spec .note{font-size:.8rem;color:var(--muted);margin:12px 0 0}
+
+/* Regla de medir */
+.ruler{margin-top:56px;height:46px;background:var(--accent);position:relative;overflow:hidden;border-block:2px solid var(--ink)}
+.ruler::before{content:"";position:absolute;inset:0;background:
+  repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 100px) 0 0/100% 22px no-repeat,
+  repeating-linear-gradient(90deg,var(--ink) 0 1px,transparent 1px 50px) 0 0/100% 14px no-repeat,
+  repeating-linear-gradient(90deg,var(--ink) 0 1px,transparent 1px 10px) 0 0/100% 8px no-repeat;opacity:.85}
+.ruler-nums{position:absolute;left:0;right:0;bottom:4px;display:flex;font-family:var(--font-mono);font-size:.72rem;color:var(--ink);white-space:nowrap}
+.ruler-nums span{flex:0 0 100px;padding-left:4px}
+
+section{padding-block:72px}
+.sec-head{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;margin-bottom:32px}
+.sec-head h2{font-size:clamp(2.2rem,5vw,3.4rem);text-transform:uppercase;font-weight:800;margin-top:8px}
+.sec-head p{max-width:44ch;color:var(--muted);margin:0}
+
+/* Categorías */
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.cat{background:var(--surface);padding:24px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.cat svg{width:34px;height:34px;color:var(--accent)}
+.cat h3{font-size:1.6rem;text-transform:uppercase;font-weight:800}
+.cat p{margin:0;color:var(--muted);font-size:.95rem}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:6px}
+.tag{font-family:var(--font-mono);font-size:.74rem;background:var(--surface-2);padding:3px 8px;border-radius:3px;white-space:nowrap}
+
+/* Servicios */
+.services{background:var(--steel);color:var(--steel-ink)}
+.services .sec-head p{color:inherit;opacity:.75}
+.svc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:28px}
+.svc{border-top:3px solid var(--accent);padding-top:16px;min-width:0}
+.svc h3{font-size:1.45rem;text-transform:uppercase;margin-bottom:8px}
+.svc p{margin:0;opacity:.8;font-size:.95rem}
+
+/* Visítanos + contacto */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+@media (max-width:860px){.two{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:28px;min-width:0}
+.panel h3{font-size:1.8rem;text-transform:uppercase;margin-bottom:16px}
+.hours{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.hours td{padding:9px 0;border-bottom:1px dashed var(--line)}
+.hours td:last-child{text-align:right;font-family:var(--font-mono);font-size:.9rem}
+.kv{display:grid;gap:14px;margin-top:20px}
+.kv div{display:grid;gap:2px}
+.kv dt{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.kv dd{margin:0;font-weight:600;word-break:break-word}
+form{display:grid;gap:14px}
+label{font-weight:600;font-size:.9rem;display:grid;gap:6px}
+input,textarea,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:11px 12px;width:100%}
+textarea{min-height:110px;resize:vertical}
+.form-actions{display:flex;gap:10px;flex-wrap:wrap}
+.status{font-size:.9rem;margin:0;min-height:1.4em}
+.status.ok{color:var(--ok)}
+.status a{font-weight:600}
+
+footer{border-top:1px solid var(--line);padding-block:28px;color:var(--muted);font-size:.88rem}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+/* Chat */
+.chat-fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:40;display:flex;align-items:center;gap:10px;background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:14px 20px;font:700 1rem var(--font-body);cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.chat-fab svg{width:22px;height:22px}
+.chat{position:fixed;right:18px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:41;width:min(390px,calc(100vw - 36px));height:min(600px,calc(100vh - 120px));background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 18px 50px rgba(0,0,0,.28);display:flex;flex-direction:column;overflow:hidden}
+.chat-head{background:var(--steel);color:var(--steel-ink);padding:14px 16px;display:flex;align-items:center;gap:12px}
+.chat-head .logo-mark{font-size:1.2rem;padding:1px 7px 0}
+.chat-head strong{display:block;font-size:.98rem}
+.chat-head small{opacity:.75;font-size:.78rem}
+.chat-close{margin-left:auto;background:transparent;border:0;color:inherit;font-size:1.5rem;line-height:1;cursor:pointer;padding:4px 8px}
+.chat-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--bg)}
+.msg{max-width:86%;padding:10px 13px;border-radius:12px;font-size:.93rem;white-space:pre-line;word-wrap:break-word}
+.msg.bot{background:var(--surface);border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:3px}
+.msg.user{background:var(--accent);color:var(--accent-ink);align-self:flex-end;border-bottom-right-radius:3px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:500 .82rem var(--font-body);background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:6px 11px;cursor:pointer;text-align:left}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.strong{background:var(--steel);color:var(--steel-ink);border-color:var(--steel)}
+.lead-card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:10px;align-self:stretch}
+.lead-card label{font-size:.82rem}
+.lead-card input,.lead-card textarea{padding:8px 10px;font-size:.9rem}
+.lead-card textarea{min-height:70px}
+.lead-card .form-actions .btn{flex:1}
+.chat-input{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line);background:var(--surface)}
+.chat-input input{flex:1;min-width:0}
+.chat-input button{flex:0 0 auto}
+</style>
+</head>
+<body>
+
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#inicio" aria-label="ATMT inicio">
+      <span class="logo-mark">ATMT</span>
+      <small>Ferretería</small>
+    </a>
+    <nav class="nav" aria-label="Principal">
+      <a href="#categorias">Productos</a>
+      <a href="#servicios">Servicios</a>
+      <a href="#visitanos">Visítanos</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+    <a class="btn btn-wa btn-sm" id="topWa" href="#" target="_blank" rel="noopener">WhatsApp</a>
+  </div>
+</header>
+
+<main id="inicio">
+  <div class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">Ferretería · Materiales · Herramientas</span>
+        <h1>Lo que tu obra necesita, <em>a la medida.</em></h1>
+        <p class="lead">En ATMT encuentras herramientas, gasfitería, electricidad, pinturas y materiales de construcción para el hogar, el taller y la obra. Cotiza por WhatsApp y recibe tu pedido en casa.</p>
+        <div class="cta-row">
+          <a class="btn btn-accent" id="heroWa" href="#" target="_blank" rel="noopener">Cotizar por WhatsApp</a>
+          <button class="btn btn-ghost" type="button" data-open-chat>Preguntar al asistente</button>
+        </div>
+      </div>
+      <aside class="spec" aria-label="Lo más pedido">
+        <h3>Lo más pedido</h3>
+        <ul>
+          <li><span>Cemento portland tipo I</span><span>bolsa 42.5 kg</span></li>
+          <li><span>Tubo PVC agua fría</span><span>½" – 4"</span></li>
+          <li><span>Cable THW</span><span>14 – 8 AWG</span></li>
+          <li><span>Pintura látex</span><span>1 gl · 4 gl</span></li>
+          <li><span>Brocas para concreto</span><span>⅛" – ½"</span></li>
+          <li><span>Clavos para madera</span><span>1" – 4" · x kg</span></li>
+        </ul>
+        <p class="note">Precios y stock por WhatsApp o en tienda.</p>
+      </aside>
+    </div>
+    <div class="ruler" aria-hidden="true">
+      <div class="ruler-nums" id="rulerNums"></div>
+    </div>
+  </div>
+
+  <section id="categorias">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="eyebrow">Catálogo</span>
+          <h2>Productos</h2>
+        </div>
+        <p>Si no lo ves aquí, pregúntanos: conseguimos lo que tu proyecto necesita.</p>
+      </div>
+      <div class="cats">
+        <article class="cat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/></svg>
+          <h3>Herramientas manuales</h3>
+          <p>Martillos, llaves, alicates, desarmadores, serruchos y wincha.</p>
+          <div class="tags"><span class="tag">Llaves mixtas 8–22 mm</span><span class="tag">Wincha 5 m</span></div>
+        </article>
+        <article class="cat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
+          <h3>Herramientas eléctricas</h3>
+          <p>Taladros, amoladoras, sierras caladoras y atornilladores inalámbricos.</p>
+          <div class="tags"><span class="tag">Amoladora 4½"</span><span class="tag">Taladro 13 mm</span></div>
+        </article>
+        <article class="cat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.7s6 6.6 6 11a6 6 0 0 1-12 0c0-4.4 6-11 6-11z"/></svg>
+          <h3>Gasfitería</h3>
+          <p>Tubos y conexiones PVC, griferías, llaves de paso, pegamento y teflón.</p>
+          <div class="tags"><span class="tag">PVC ½"–4"</span><span class="tag">Llave de paso ½"</span></div>
+        </article>
+        <article class="cat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg>
+          <h3>Electricidad</h3>
+          <p>Cables, interruptores, tomacorrientes, llaves térmicas, focos LED y canaletas.</p>
+          <div class="tags"><span class="tag">THW 14 AWG</span><span class="tag">Térmica 2×20 A</span></div>
+        </article>
+        <article class="cat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h12v5H4zM16 6.5h3v6h-7V16M10 16h4v6h-4z"/></svg>
+          <h3>Pinturas y acabados</h3>
+          <p>Látex, esmaltes, anticorrosivos, barnices, rodillos, brochas y lijas.</p>
+          <div class="tags"><span class="tag">Galón 3.785 L</span><span class="tag">Lija N.º 80–220</span></div>
+        </article>
+        <article class="cat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M5 21V10l7-6 7 6v11M9 21v-6h6v6"/></svg>
+          <h3>Construcción</h3>
+          <p>Cemento, fierro corrugado, alambre, yeso, impermeabilizantes y aditivos.</p>
+          <div class="tags"><span class="tag">Fierro ⅜" × 9 m</span><span class="tag">Alambre N.º 16</span></div>
+        </article>
+        <article class="cat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3h8l-1 4H9zM12 7v14M9 11h6M9 15h6M10 19h4"/></svg>
+          <h3>Fijaciones</h3>
+          <p>Tornillos, pernos, tarugos, clavos, anclajes y abrazaderas.</p>
+          <div class="tags"><span class="tag">Tarugo N.º 6–10</span><span class="tag">Perno ¼"–½"</span></div>
+        </article>
+        <article class="cat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5z"/></svg>
+          <h3>Seguridad</h3>
+          <p>Cascos, guantes, lentes, botas, arneses y señalización.</p>
+          <div class="tags"><span class="tag">Guantes de nitrilo</span><span class="tag">Casco tipo I</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="servicios" class="services">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="eyebrow">Servicios</span>
+          <h2>Más que vender</h2>
+        </div>
+        <p>Te ayudamos a comprar lo justo para tu trabajo, sin vueltas.</p>
+      </div>
+      <div class="svc-grid">
+        <div class="svc"><h3>Delivery</h3><p>Llevamos tu pedido a casa u obra. El costo depende del distrito y del volumen.</p></div>
+        <div class="svc"><h3>Cotización para obra</h3><p>Envíanos tu lista de materiales y te respondemos con precios y disponibilidad.</p></div>
+        <div class="svc"><h3>Precio por volumen</h3><p>Descuentos para maestros de obra, contratistas y empresas.</p></div>
+        <div class="svc"><h3>Asesoría técnica</h3><p>Te orientamos para elegir el material, la medida y la cantidad correctos.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="visitanos">
+    <div class="wrap two">
+      <div class="panel">
+        <span class="eyebrow">Visítanos</span>
+        <h3 style="margin-top:8px">Horario de atención</h3>
+        <table class="hours">
+          <tbody id="hoursBody"></tbody>
+        </table>
+        <dl class="kv">
+          <div><dt>Dirección</dt><dd id="addr"></dd></div>
+          <div><dt>WhatsApp</dt><dd id="waText"></dd></div>
+          <div><dt>Correo</dt><dd id="mailText"></dd></div>
+        </dl>
+      </div>
+
+      <div class="panel" id="contacto">
+        <span class="eyebrow">Contacto</span>
+        <h3 style="margin-top:8px">Pide tu cotización</h3>
+        <form id="contactForm" novalidate>
+          <label for="cfName">Nombre
+            <input id="cfName" name="nombre" autocomplete="name" required placeholder="Ej. Juan Pérez">
+          </label>
+          <label for="cfPhone">Teléfono
+            <input id="cfPhone" name="telefono" type="tel" autocomplete="tel" required placeholder="Ej. 987 654 321">
+          </label>
+          <label for="cfMsg">¿Qué necesitas?
+            <textarea id="cfMsg" name="consulta" required placeholder="Ej. 10 bolsas de cemento y 5 varillas de fierro de ⅜&quot;, delivery a Surco."></textarea>
+          </label>
+          <div class="form-actions">
+            <button class="btn btn-wa" type="button" data-send="wa">Enviar por WhatsApp</button>
+            <button class="btn btn-accent" type="submit">Enviar por correo</button>
+          </div>
+          <p class="status" id="cfStatus" role="status"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© <span id="year"></span> ATMT Ferretería</span>
+    <span>Herramientas · Gasfitería · Electricidad · Pinturas · Construcción</span>
+  </div>
+</footer>
+
+<!-- Chatbot -->
+<button class="chat-fab" id="chatFab" type="button" aria-expanded="false" aria-controls="chat">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>
+  <span id="fabLabel">¿Te ayudo?</span>
+</button>
+
+<div class="chat" id="chat" role="dialog" aria-label="Asistente ATMT" hidden>
+  <div class="chat-head">
+    <span class="logo-mark">ATMT</span>
+    <div><strong>Asistente ATMT</strong><small>Respuestas al instante</small></div>
+    <button class="chat-close" id="chatClose" type="button" aria-label="Cerrar chat">×</button>
+  </div>
+  <div class="chat-body" id="chatBody" aria-live="polite"></div>
+  <form class="chat-input" id="chatForm">
+    <input id="chatText" autocomplete="off" placeholder="Escribe tu pregunta…" aria-label="Escribe tu pregunta">
+    <button class="btn btn-accent btn-sm" type="submit">Enviar</button>
+  </form>
+</div>
+
+<script>
+/* ============ CONFIGURACIÓN: edita aquí los datos de tu negocio ============ */
+const CONFIG = {
+  empresa: "ATMT Ferretería",
+  whatsapp: "51977446048",                 // código de país 51 + número, sin espacios ni "+"
+  whatsappVisible: "+51 977 446 048",
+  email: "cventuro@pucp.pe",
+  direccion: "Av. Principal 123, Lima (edita esta dirección)",
+  horario: [
+    ["Lunes a viernes", "8:00 a. m. – 7:00 p. m."],
+    ["Sábado", "8:00 a. m. – 5:00 p. m."],
+    ["Domingo y feriados", "9:00 a. m. – 1:00 p. m."]
+  ]
+};
+
+/* ============ 10 PREGUNTAS BÁSICAS ============ */
+const FAQ = [
+  { q: "¿Cuál es su horario de atención?",
+    k: ["horario","hora","abren","cierran","atienden","abierto","domingo","sabado","feriado"],
+    a: () => "Nuestro horario es:\n" + CONFIG.horario.map(h => "• " + h[0] + ": " + h[1]).join("\n") },
+  { q: "¿Dónde están ubicados?",
+    k: ["donde","ubicacion","ubicados","direccion","local","tienda","llegar","mapa"],
+    a: () => "Estamos en " + CONFIG.direccion + ". Si vienes por un pedido grande, avísanos antes por WhatsApp y te lo tenemos listo." },
+  { q: "¿Hacen delivery?",
+    k: ["delivery","envio","envian","despacho","llevan","domicilio","obra","reparto"],
+    a: () => "Sí, hacemos delivery a casa u obra. El costo depende del distrito y del volumen del pedido. Escríbenos tu dirección y lista de productos y te cotizamos el envío." },
+  { q: "¿Qué medios de pago aceptan?",
+    k: ["pago","pagar","tarjeta","yape","plin","efectivo","transferencia","visa","credito","debito"],
+    a: () => "Aceptamos efectivo, tarjetas de débito y crédito, Yape, Plin y transferencia bancaria. Para delivery, el pago se coordina al confirmar el pedido." },
+  { q: "¿Venden por mayor o tienen descuentos?",
+    k: ["mayor","mayorista","descuento","volumen","cantidad","contratista","maestro","empresa","oferta"],
+    a: () => "Sí. Tenemos precios especiales por volumen para maestros de obra, contratistas y empresas. Envíanos tu lista y te damos el mejor precio." },
+  { q: "¿Emiten boleta y factura?",
+    k: ["factura","boleta","ruc","comprobante","sunat","electronica"],
+    a: () => "Sí, emitimos boleta y factura electrónica. Para factura solo necesitamos tu RUC y razón social." },
+  { q: "¿Los productos tienen garantía?",
+    k: ["garantia","falla","defecto","malogro","devolucion","cambio","reclamo"],
+    a: () => "Las herramientas eléctricas tienen la garantía del fabricante. Para cambios o devoluciones, guarda tu comprobante y trae el producto con su empaque dentro de los 7 días de la compra." },
+  { q: "¿Qué productos venden?",
+    k: ["productos","venden","tienen","catalogo","herramienta","cemento","pintura","tubo","cable","fierro","tornillo","taladro","stock","hay"],
+    a: () => "Vendemos herramientas manuales y eléctricas, gasfitería, electricidad, pinturas y acabados, materiales de construcción, fijaciones y equipos de seguridad. Si buscas algo específico, dime qué es y te confirmamos stock." },
+  { q: "¿Cómo pido una cotización?",
+    k: ["cotizacion","cotizar","presupuesto","precio","cuanto","cuesta","vale","lista"],
+    a: () => "Envíanos tu lista de materiales con cantidades y medidas (por ejemplo: 10 bolsas de cemento, 5 varillas de fierro de ⅜\"). Te respondemos con precios y disponibilidad. Puedes dejar tus datos aquí mismo con el botón «Hablar con un asesor»." },
+  { q: "¿Me ayudan a elegir el material?",
+    k: ["asesoria","ayuda","recomienda","elegir","cual","medida","calcular","cuantos","necesito","consejo"],
+    a: () => "Claro. Cuéntanos qué vas a hacer (por ejemplo, pintar una sala de 4 × 5 m o instalar un tomacorriente) y te recomendamos el material, la medida y la cantidad." }
+];
+
+/* ============ Utilidades ============ */
+const $ = s => document.querySelector(s);
+const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9ñ\s]/g, " ");
+const waLink = text => "https://wa.me/" + CONFIG.whatsapp + "?text=" + encodeURIComponent(text);
+const mailLink = (subject, body) => "mailto:" + CONFIG.email + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+
+function buildMessage(d, origen) {
+  return "Nueva consulta – " + CONFIG.empresa + " (" + origen + ")\n" +
+    "Nombre: " + d.nombre + "\nTeléfono: " + d.telefono + "\nConsulta: " + d.consulta;
+}
+
+/* Envío por correo con FormSubmit (funciona al subir la página a tu hosting).
+   La primera vez, FormSubmit envía un correo de activación a CONFIG.email que debes confirmar. */
+async function sendEmail(d, origen) {
+  const res = await fetch("https://formsubmit.co/ajax/" + CONFIG.email, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Accept": "application/json" },
+    body: JSON.stringify({
+      _subject: "Nueva consulta web – " + CONFIG.empresa,
+      _template: "table",
+      origen, nombre: d.nombre, telefono: d.telefono, consulta: d.consulta
+    })
+  });
+  if (!res.ok) throw new Error("HTTP " + res.status);
+  const j = await res.json().catch(() => ({}));
+  if (String(j.success) !== "true") throw new Error(j.message || "No confirmado");
+  return true;
+}
+
+/* ============ Datos en la página ============ */
+document.querySelectorAll("#topWa, #heroWa").forEach(a => a.href = waLink("Hola ATMT, quiero cotizar: "));
+$("#addr").textContent = CONFIG.direccion;
+$("#waText").textContent = CONFIG.whatsappVisible;
+$("#mailText").textContent = CONFIG.email;
+$("#hoursBody").innerHTML = CONFIG.horario.map(h => "<tr><td>" + h[0] + "</td><td>" + h[1] + "</td></tr>").join("");
+$("#year").textContent = new Date().getFullYear();
+$("#rulerNums").innerHTML = Array.from({length: 40}, (_, i) => "<span>" + i * 10 + "</span>").join("");
+
+/* ============ Formulario de contacto ============ */
+const cf = $("#contactForm"), cfStatus = $("#cfStatus");
+function readContact() {
+  const d = { nombre: $("#cfName").value.trim(), telefono: $("#cfPhone").value.trim(), consulta: $("#cfMsg").value.trim() };
+  if (!d.nombre || !d.telefono || !d.consulta) {
+    cfStatus.className = "status";
+    cfStatus.textContent = "Completa nombre, teléfono y tu consulta para enviarla.";
+    return null;
+  }
+  return d;
+}
+cf.querySelector('[data-send="wa"]').addEventListener("click", () => {
+  const d = readContact(); if (!d) return;
+  const a = document.createElement("a");
+  a.href = waLink(buildMessage(d, "Formulario")); a.target = "_blank"; a.rel = "noopener";
+  document.body.appendChild(a); a.click(); a.remove();
+  cfStatus.className = "status";
+  cfStatus.innerHTML = 'Abrimos WhatsApp con tu mensaje listo. Si no se abrió, <a href="' + a.href + '" target="_blank" rel="noopener">toca aquí</a>.';
+});
+cf.addEventListener("submit", async e => {
+  e.preventDefault();
+  const d = readContact(); if (!d) return;
+  cfStatus.className = "status"; cfStatus.textContent = "Enviando…";
+  try {
+    await sendEmail(d, "Formulario");
+    cfStatus.className = "status ok"; cfStatus.textContent = "Listo, recibimos tu consulta. Te responderemos pronto.";
+    cf.reset();
+  } catch {
+    cfStatus.className = "status";
+    cfStatus.innerHTML = 'No se pudo enviar desde aquí. Escríbenos a <a href="' + mailLink("Consulta web – " + CONFIG.empresa, buildMessage(d, "Formulario")) + '">' + CONFIG.email + '</a> o usa el botón de WhatsApp.';
+  }
+});
+
+/* ============ Chatbot ============ */
+const chat = $("#chat"), body = $("#chatBody"), fab = $("#chatFab");
+let started = false;
+const transcript = [];
+
+function addMsg(text, who) {
+  const m = document.createElement("div");
+  m.className = "msg " + who; m.textContent = text;
+  body.appendChild(m); body.scrollTop = body.scrollHeight;
+  transcript.push((who === "user" ? "Cliente: " : "Bot: ") + text);
+}
+function addChips() {
+  const wrap = document.createElement("div"); wrap.className = "chips";
+  FAQ.forEach((f, i) => {
+    const c = document.createElement("button"); c.type = "button"; c.className = "chip"; c.textContent = f.q;
+    c.addEventListener("click", () => ask(i)); wrap.appendChild(c);
+  });
+  const adv = document.createElement("button"); adv.type = "button"; adv.className = "chip strong";
+  adv.textContent = "Hablar con un asesor"; adv.addEventListener("click", showLeadForm);
+  wrap.appendChild(adv);
+  body.appendChild(wrap); body.scrollTop = body.scrollHeight;
+}
+function ask(i) {
+  addMsg(FAQ[i].q, "user");
+  setTimeout(() => { addMsg(FAQ[i].a(), "bot"); followUp(); }, 280);
+}
+function followUp() {
+  const wrap = document.createElement("div"); wrap.className = "chips";
+  [["Otra pregunta", () => { addMsg("Elige una opción o escríbeme tu duda:", "bot"); addChips(); }],
+   ["Hablar con un asesor", showLeadForm]].forEach(([t, fn], idx) => {
+    const c = document.createElement("button"); c.type = "button"; c.className = "chip" + (idx ? " strong" : ""); c.textContent = t;
+    c.addEventListener("click", () => { wrap.remove(); fn(); }); wrap.appendChild(c);
+  });
+  body.appendChild(wrap); body.scrollTop = body.scrollHeight;
+}
+function match(text) {
+  const words = norm(text).split(/\s+/).filter(Boolean);
+  let best = -1, score = 0;
+  FAQ.forEach((f, i) => {
+    let s = 0;
+    f.k.forEach(k => { if (words.some(w => w === k || (w.length > 3 && (w.startsWith(k) || k.startsWith(w))))) s++; });
+    if (s > score) { score = s; best = i; }
+  });
+  return score > 0 ? best : -1;
+}
+let leadSeq = 0;
+function showLeadForm() {
+  addMsg("Déjame tus datos y un asesor te contacta. Tu consulta llega a nuestro WhatsApp y correo.", "bot");
+  const n = ++leadSeq;
+  const card = document.createElement("form"); card.className = "lead-card"; card.noValidate = true;
+  card.innerHTML =
+    '<label for="ldName' + n + '">Nombre<input id="ldName' + n + '" autocomplete="name" required></label>' +
+    '<label for="ldPhone' + n + '">Teléfono<input id="ldPhone' + n + '" type="tel" autocomplete="tel" required></label>' +
+    '<label for="ldMsg' + n + '">Consulta<textarea id="ldMsg' + n + '" required placeholder="¿Qué producto o servicio necesitas?"></textarea></label>' +
+    '<div class="form-actions"><button class="btn btn-wa btn-sm" type="button" data-k="wa">WhatsApp</button><button class="btn btn-accent btn-sm" type="submit">Correo</button></div>' +
+    '<p class="status" role="status"></p>';
+  body.appendChild(card); body.scrollTop = body.scrollHeight;
+  const st = card.querySelector(".status");
+  const read = () => {
+    const d = { nombre: card.querySelector("#ldName" + n).value.trim(), telefono: card.querySelector("#ldPhone" + n).value.trim(), consulta: card.querySelector("#ldMsg" + n).value.trim() };
+    if (!d.nombre || !d.telefono || !d.consulta) { st.className = "status"; st.textContent = "Completa los tres campos."; return null; }
+    const hist = transcript.filter(t => t.startsWith("Cliente:")).slice(-5).join(" | ");
+    if (hist) d.consulta += "\n(Preguntas en el chat: " + hist + ")";
+    return d;
+  };
+  card.querySelector('[data-k="wa"]').addEventListener("click", () => {
+    const d = read(); if (!d) return;
+    const href = waLink(buildMessage(d, "Chatbot"));
+    const a = document.createElement("a"); a.href = href; a.target = "_blank"; a.rel = "noopener";
+    document.body.appendChild(a); a.click(); a.remove();
+    st.className = "status"; st.innerHTML = 'Abrimos WhatsApp con tu mensaje. Solo presiona enviar. Si no se abrió, <a href="' + href + '" target="_blank" rel="noopener">toca aquí</a>.';
+  });
+  card.addEventListener("submit", async e => {
+    e.preventDefault();
+    const d = read(); if (!d) return;
+    st.className = "status"; st.textContent = "Enviando…";
+    try {
+      await sendEmail(d, "Chatbot");
+      st.className = "status ok"; st.textContent = "¡Enviado! Te contactaremos pronto.";
+      addMsg("Gracias, " + d.nombre.split(" ")[0] + ". Recibimos tu consulta y te escribiremos al " + d.telefono + ".", "bot");
+    } catch {
+      st.className = "status";
+      st.innerHTML = 'No se pudo enviar desde aquí. Escríbenos a <a href="' + mailLink("Consulta web – " + CONFIG.empresa, buildMessage(d, "Chatbot")) + '">' + CONFIG.email + '</a> o usa WhatsApp.';
+    }
+  });
+}
+function openChat() {
+  chat.hidden = false; fab.setAttribute("aria-expanded", "true"); $("#fabLabel").textContent = "Cerrar";
+  if (!started) {
+    started = true;
+    addMsg("¡Hola! Soy el asistente de " + CONFIG.empresa + ". ¿En qué te ayudo? Elige una pregunta o escríbela:", "bot");
+    addChips();
+  }
+  setTimeout(() => $("#chatText").focus(), 50);
+}
+function closeChat() { chat.hidden = true; fab.setAttribute("aria-expanded", "false"); $("#fabLabel").textContent = "¿Te ayudo?"; }
+fab.addEventListener("click", () => chat.hidden ? openChat() : closeChat());
+$("#chatClose").addEventListener("click", closeChat);
+document.querySelectorAll("[data-open-chat]").forEach(b => b.addEventListener("click", openChat));
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !chat.hidden) closeChat(); });
+
+$("#chatForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const input = $("#chatText"), text = input.value.trim(); if (!text) return;
+  input.value = ""; addMsg(text, "user");
+  const i = match(text);
+  setTimeout(() => {
+    if (/^(hola|buenas|buenos|hey|saludos)\b/i.test(norm(text).trim()) && i < 0) {
+      addMsg("¡Hola! Cuéntame qué necesitas o elige una de estas preguntas:", "bot"); addChips(); return;
+    }
+    if (i >= 0) { addMsg(FAQ[i].a(), "bot"); followUp(); }
+    else { addMsg("No tengo esa respuesta, pero un asesor sí. Déjame tus datos y te escribimos.", "bot"); showLeadForm(); }
+  }, 280);
+});
+</script>
+
+</body>
+</html>
